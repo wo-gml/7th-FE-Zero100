@@ -19,7 +19,7 @@ const Form = ({ addTask }) => {
         value={newTask}
         onChange={(e) => setNewTask(e.target.value)}
       />
-      <Button label="Add" onClick={handleAdd} />
+     <Button label="Add" onClick={handleAdd} />
     </div>
   );
 };

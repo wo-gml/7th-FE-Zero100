@@ -1,11 +1,22 @@
 import Button from '../components/Button';
 
 const FilterButtons = ({ currentPath, navigate }) => {
+  const filters = [
+    { label: 'All', path: '/all' },
+    { label: 'Active', path: '/active' },
+    { label: 'Completed', path: '/completed' },
+  ];
+
   return (
     <div className="flex gap-2 mb-8">
-      <Button label="All" isActive={currentPath === '/all'} onClick={() => navigate('/all')} />
-      <Button label="Active" isActive={currentPath === '/active'} onClick={() => navigate('/active')} />
-      <Button label="Completed" isActive={currentPath === '/completed'} onClick={() => navigate('/completed')} />
+      {filters.map(({ label, path }) => (
+        <Button
+          key={label}
+          label={label}
+          isActive={currentPath === path || (currentPath === '/' && label === 'All')}
+          onClick={() => navigate(path)}
+        />
+      ))}
     </div>
   );
 };

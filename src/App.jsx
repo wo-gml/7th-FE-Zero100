@@ -1,15 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import Form from './features/Form';
 import FilterButtons from './features/FilterButtons';
 import TodoItem from './features/TodoItem';
 
 function App() {
-  const [todos, setTodos] = useState([
-    { id: 1, text: 'Eat', completed: true },
-    { id: 2, text: 'Sleep', completed: false },
-    { id: 3, text: 'Repeat', completed: false },
-  ]);
+  // 동적 초기화
+  const [todos, setTodos] = useState(() => {
+    const savedTodos = localStorage.getItem('todoData');
+    if (savedTodos) {
+      return JSON.parse(savedTodos);
+    } else {
+      return [
+        { id: 1, text: 'Eat', completed: false },
+        { id: 2, text: 'Sleep', completed: false },
+        { id: 3, text: 'Repeat', completed: false },
+      ];
+    }
+  });
+
+  // todos 배열이 바뀔 때마다 LocalStorage에 자동으로 저장
+  useEffect(() => {
+    localStorage.setItem('todoData', JSON.stringify(todos));
+  }, [todos]);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -73,10 +86,9 @@ function App() {
         </h2>
 
         <Routes>
-          <Route path="/" element={todoListUI} />
-          <Route path="/all" element={todoListUI} />
-          <Route path="/active" element={todoListUI} />
-          <Route path="/completed" element={todoListUI} />
+          {['/', '/all', '/active', '/completed'].map((path) => (
+            <Route key={path} path={path} element={todoListUI} />
+          ))}
         </Routes>
 
       </div>
