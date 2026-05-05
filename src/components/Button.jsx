@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const variantStyles = {
   primary:
     'bg-black text-white font-medium text-[16px] h-[44px] px-6 rounded-[10px] hover:bg-gray-800 transition-colors',
@@ -22,8 +23,20 @@ const Button = ({
       {...props}
     >
       {children}
+=======
+import React from 'react';
+
+const Button = ({ label, onClick }) => {
+  return (
+    <button className={`btn-${label}`} onClick={onClick}>
+      {label}
+>>>>>>> upstream/조재희/main
     </button>
   );
 };
 
+<<<<<<< HEAD
 export default Button;
+=======
+export default Button;
+>>>>>>> upstream/조재희/main
