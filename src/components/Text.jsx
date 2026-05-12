@@ -1,10 +1,11 @@
 import React from 'react';
 
-const Text = ({ content }) => {
+const Text = ({ children, className }) => {
   return (
-    <span className="textName">
-      {content}
+    <span className={className}>
+      {children}
     </span>
   );
 };
+
 export default Text;

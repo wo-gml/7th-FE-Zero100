@@ -1,4 +1,6 @@
-import React from 'react';
+const Button = ({ label, onClick, isActive }) => {
+  //  공통 스타일
+  const baseStyle = "font-bold transition-colors ";
 
 const variantStyles = {
   primary:
