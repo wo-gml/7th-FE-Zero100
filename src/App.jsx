@@ -1,38 +1,39 @@
-import { useState } from 'react';
-import Text from './components/Text';
-import Button from './components/Button';
-import Input from './components/Input';
-import Checkbox from './components/Checkbox';
-import './App.css';
+import { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import Form from './features/Form';
+import FilterButtons from './features/FilterButtons';
+import TodoItem from './features/TodoItem';
 
 function App() {
-  const [newTask, setNewTask] = useState('');
-  const [todos, setTodos] = useState([
-    { id: 1, text: 'Eat', completed: true },
-    { id: 2, text: 'Sleep', completed: false },
-    { id: 3, text: 'Repeat', completed: false },
-  ]);
-  
-  const [filter, setFilter] = useState('All');
-  const [editingId, setEditingId] = useState(null);
-  const [editingText, setEditingText] = useState('');
+  // 동적 초기화
+  const [todos, setTodos] = useState(() => {
+    const savedTodos = localStorage.getItem('todoData');
+    if (savedTodos) {
+      return JSON.parse(savedTodos);
+    } else {
+      return [
+        { id: 1, text: 'Eat', completed: false },
+        { id: 2, text: 'Sleep', completed: false },
+        { id: 3, text: 'Repeat', completed: false },
+      ];
+    }
+  });
 
-  const handleAdd = () => {
-    const trimmed = newTask.trim();
-    if (!trimmed) return;
+  // todos 배열이 바뀔 때마다 LocalStorage에 자동으로 저장
+  useEffect(() => {
+    localStorage.setItem('todoData', JSON.stringify(todos));
+  }, [todos]);
 
-    setTodos((prev) => [
-      ...prev,
-      { id: Date.now(), text: trimmed, completed: false },
-    ]);
-    setNewTask('');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const addTask = (name) => {
+    setTodos((prev) => [...prev, { id: Date.now(), text: name, completed: false }]);
   };
 
   const toggleTask = (id) => {
     setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
+      prev.map((todo) => todo.id === id ? { ...todo, completed: !todo.completed } : todo)
     );
   };
 
@@ -40,91 +41,57 @@ function App() {
     setTodos((prev) => prev.filter((todo) => todo.id !== id));
   };
 
-  const saveTask = (id) => {
+  const editTask = (id, newText) => {
     setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, text: editingText } : todo
-      )
+      prev.map((todo) => todo.id === id ? { ...todo, text: newText } : todo)
     );
-    setEditingId(null);
   };
 
+  const currentPath = location.pathname;
   const filteredTodos = todos.filter((todo) => {
-    if (filter === 'Active') return !todo.completed;
-    if (filter === 'Completed') return todo.completed;
+    if (currentPath === '/active') return !todo.completed;
+    if (currentPath === '/completed') return todo.completed;
     return true;
   });
 
-  const activeTasksCount = todos.filter((todo) => !todo.completed).length
+  const activeTasksCount = todos.filter((todo) => !todo.completed).length;
+
+  const todoListUI = (
+    <ul className="space-y-4">
+      {filteredTodos.map((todo) => (
+        <TodoItem 
+          key={todo.id} 
+          todo={todo} 
+          toggleTask={toggleTask} 
+          deleteTask={deleteTask} 
+          editTask={editTask} 
+        />
+      ))}
+    </ul>
+  );
 
   return (
-    <div className="app-container">
-      
-      <h1 className="main-title"><b>TodoMatic</b></h1>
-      <h2 style={{ width: '100%', textAlign: 'left' }}><b>What needs to be done?</b></h2>
+    <div className="min-h-screen bg-gray-100 py-12 px-4">
+      <div className="max-w-xl mx-auto p-8 bg-white rounded-lg shadow-sm border border-gray-200">
+        
+        <h1 className="text-4xl font-extrabold text-center mb-2">TodoMatic</h1>
+        <h2 className="text-center text-gray-500 mb-6 text-lg">What needs to be done?</h2>
 
-      <div className="todo-header" style={{ marginBottom: '10px' }}>
-        <Input 
-          value={newTask} 
-          onChange={(e) => setNewTask(e.target.value)} 
-        />
-        <Button label="Add" onClick={handleAdd} />
+        <Form addTask={addTask} />
+
+        <FilterButtons currentPath={currentPath} navigate={navigate} />
+
+        <h2 className="text-lg font-bold mb-4">
+          {activeTasksCount} tasks remaining
+        </h2>
+
+        <Routes>
+          {['/', '/all', '/active', '/completed'].map((path) => (
+            <Route key={path} path={path} element={todoListUI} />
+          ))}
+        </Routes>
+
       </div>
-
-      <div className="filters">
-        <Button label="Show all tasks" onClick={() => setFilter('All')} />
-        <Button label="Show active tasks" onClick={() => setFilter('Active')} />
-        <Button label="Show completed tasks" onClick={() => setFilter('Completed')} />
-      </div>
-
-      <h2 id="list-heading" style={{ width: '100%', textAlign: 'left', marginTop: '20px' }}>
-        <b>{activeTasksCount} tasks remaining</b>
-      </h2>
-
-      <ul className="todo-list" style={{ paddingLeft: '20px' }}>
-        {filteredTodos.map((todo) => {
-          const taskName = todo.text;
-          const isEditing = editingId === todo.id;
-
-          return (
-            <li className="todo-item" key={todo.id} style={{ marginBottom: '15px' }}>
-              
-              <div className="todo-content" style={{ display: 'flex', alignItems: 'center' }}>
-                <Checkbox 
-                  checked={todo.completed} 
-                  onChange={() => toggleTask(todo.id)} 
-                />
-                {isEditing ? (
-                  <Input 
-                    value={editingText} 
-                    onChange={(e) => setEditingText(e.target.value)} 
-                  />
-                ) : (
-                  <Text content={taskName} />
-                )}
-              </div>
-
-              <div className="todo-buttons" style={{ marginTop: '5px', marginLeft: '25px', display: 'flex', gap: '5px' }}>
-                {isEditing ? (
-                  <Button label="Save" onClick={() => saveTask(todo.id)} />
-                ) : (
-                  <Button 
-                    label={`Edit ${taskName}`} 
-                    onClick={() => {
-                      setEditingId(todo.id);
-                      setEditingText(taskName);
-                    }} 
-                  />
-                )}
-                <Button 
-                  label={`Delete ${taskName}`} 
-                  onClick={() => deleteTask(todo.id)} 
-                />
-              </div>
-            </li>
-          );
-        })}
-      </ul>
     </div>
   );
 }
