@@ -1,10 +1,12 @@
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
 import Button from '../components/Button';
+import DeleteModal from '../components/DeleteModal';
 
-// 추후 API 연동 시 교체할 임시 데이터
+// 추후 API 연동 
 const inquiries = [
   {
     id: 1,
@@ -57,6 +59,7 @@ const inquiries = [
 const InquiryDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const inquiry = inquiries.find((item) => item.id === Number(id));
 
   if (!inquiry) {
@@ -89,7 +92,7 @@ const InquiryDetail = () => {
               <Button variant="secondary" onClick={() => navigate('/inquiry')}>
                 목록으로
               </Button>
-              <Button variant="secondary" onClick={() => {}}>
+              <Button variant="secondary" onClick={() => setIsDeleteOpen(true)}>
                 삭제
               </Button>
             </div>
@@ -131,6 +134,17 @@ const InquiryDetail = () => {
       </main>
 
       <Footer />
+
+      {/* 삭제 확인 모달 */}
+      <DeleteModal
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onConfirm={() => {
+          // TODO: API 연동 시 삭제 요청 추가
+          setIsDeleteOpen(false);
+          navigate('/inquiry', { state: { deleted: true } });
+        }}
+      />
 
     </div>
   );

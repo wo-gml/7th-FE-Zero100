@@ -45,13 +45,13 @@ const MyPage = () => {
               <h2 className="text-[18px] font-bold text-black">비밀번호 변경</h2>
               <div className="flex flex-col gap-3">
                 <LabeledField label="현재 비밀번호">
-                  <TextInput type="password" placeholder="텍스트를 입력하세요" />
+                  <TextInput type="password" placeholder="현재 비밀번호" />
                 </LabeledField>
                 <LabeledField label="새 비밀번호">
-                  <TextInput type="password" placeholder="텍스트를 입력하세요" />
+                  <TextInput type="password" placeholder="새 비밀번호" />
                 </LabeledField>
                 <LabeledField label="비밀번호 확인">
-                  <TextInput type="password" placeholder="텍스트를 입력하세요" />
+                  <TextInput type="password" placeholder="새 비밀번호 확인" />
                 </LabeledField>
                 <div className="flex justify-end pt-1">
                   <Button variant="primary" type="button">

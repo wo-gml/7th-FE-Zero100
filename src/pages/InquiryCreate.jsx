@@ -38,20 +38,20 @@ const InquiryCreate = () => {
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
 
               <LabeledField label="이름">
-                <TextInput type="text" placeholder="텍스트를 입력하세요" />
+                <TextInput type="text" placeholder="이름을 입력하세요" />
               </LabeledField>
 
               <LabeledField label="이메일">
-                <TextInput type="email" placeholder="텍스트를 입력하세요" />
+                <TextInput type="email" placeholder="이메일을 입력하세요" />
               </LabeledField>
 
               <LabeledField label="제목">
-                <TextInput type="text" placeholder="텍스트를 입력하세요" />
+                <TextInput type="text" placeholder="제목을 입력하세요" />
               </LabeledField>
 
               <LabeledField label="내용">
                 <textarea
-                  placeholder="텍스트를 입력하세요"
+                  placeholder="내용을 입력하세요"
                   className="w-full bg-[#F9FAFB] border border-[#E5E7EB] rounded-[10px] px-4 py-3.5 text-[16px] outline-none resize-none transition-all placeholder:text-black/50 text-gray-900 focus:border-gray-400 focus:ring-1 focus:ring-gray-400"
                   rows={7}
                 />

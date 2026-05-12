@@ -1,8 +1,10 @@
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
 import Button from '../components/Button';
+import Toast from '../components/Toast';
 
 const inquiries = [
   { id: 1, title: '서비스 이용 관련 문의드립니다', date: '2026년 3월 25일 17:11' },
@@ -14,6 +16,19 @@ const inquiries = [
 
 const Inquiry = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [showToast, setShowToast] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.deleted) {
+      setShowToast(true);
+      // state 정리 — 새로고침 시 토스트 재표시 방지
+      window.history.replaceState({}, '');
+    }
+  }, [location.state]);
+
+  const handleCloseToast = useCallback(() => setShowToast(false), []);
+
   return (
     <div className="relative w-screen h-screen bg-[#F9FAFB] overflow-hidden font-sans">
 
@@ -26,7 +41,7 @@ const Inquiry = () => {
         {/* Title + Button Row */}
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-[24px] font-bold text-black">문의 목록</h1>
-          <Button variant="primary" onClick={() => navigate('/inquiry/create')}>문의하기</Button>
+          <Button variant="primary" onClick={() => navigate('/inquiry/create')}>문의 등록</Button>
         </div>
 
         {/* Table Container */}
@@ -64,6 +79,13 @@ const Inquiry = () => {
       </main>
 
       <Footer />
+
+      {/* 삭제 완료 토스트 */}
+      <Toast
+        message="문의가 삭제되었습니다."
+        isVisible={showToast}
+        onClose={handleCloseToast}
+      />
 
     </div>
   );
