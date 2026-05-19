@@ -18,7 +18,7 @@ const InquiryCreate = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // 추후 실제 등록 API 연동
-    navigate('/inquiry');
+    navigate('/inquiry', { state: { created: true } });
   };
 
   return (

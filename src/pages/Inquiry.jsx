@@ -17,17 +17,19 @@ const inquiries = [
 const Inquiry = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [showToast, setShowToast] = useState(false);
+  const [toastConfig, setToastConfig] = useState({ isVisible: false, message: '' });
 
   useEffect(() => {
     if (location.state?.deleted) {
-      setShowToast(true);
-      // state 정리 — 새로고침 시 토스트 재표시 방지
-      window.history.replaceState({}, '');
+      setToastConfig({ isVisible: true, message: '문의가 삭제되었습니다.' });
+      navigate('/inquiry', { replace: true });
+    } else if (location.state?.created) {
+      setToastConfig({ isVisible: true, message: '문의가 등록되었습니다.' });
+      navigate('/inquiry', { replace: true });
     }
-  }, [location.state]);
+  }, [location.state, navigate]);
 
-  const handleCloseToast = useCallback(() => setShowToast(false), []);
+  const handleCloseToast = useCallback(() => setToastConfig(prev => ({ ...prev, isVisible: false })), []);
 
   return (
     <div className="relative w-screen h-screen bg-[#F9FAFB] overflow-hidden font-sans">
@@ -65,7 +67,15 @@ const Inquiry = () => {
                 <tr
                   key={item.id}
                   onClick={() => navigate(`/inquiry/${item.id}`)}
-                  className={`${idx < inquiries.length - 1 ? 'border-b border-[#F3F4F6]' : ''} hover:bg-gray-50 transition-colors cursor-pointer`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      navigate(`/inquiry/${item.id}`);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="button"
+                  className={`${idx < inquiries.length - 1 ? 'border-b border-[#F3F4F6]' : ''} hover:bg-gray-50 focus:bg-gray-50 focus:outline-none transition-colors cursor-pointer`}
                 >
                   <td className="px-4 py-[14px] text-[14px] text-black">{item.id}</td>
                   <td className="px-4 py-[14px] text-[14px] font-medium text-black">{item.title}</td>
@@ -80,10 +90,10 @@ const Inquiry = () => {
 
       <Footer />
 
-      {/* 삭제 완료 토스트 */}
+      {/* 상태에 따른 토스트 메시지 */}
       <Toast
-        message="문의가 삭제되었습니다."
-        isVisible={showToast}
+        message={toastConfig.message}
+        isVisible={toastConfig.isVisible}
         onClose={handleCloseToast}
       />
 
