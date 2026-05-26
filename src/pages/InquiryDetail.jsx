@@ -1,66 +1,49 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
 import Button from '../components/Button';
 import DeleteModal from '../components/DeleteModal';
-
-// 추후 API 연동 
-const inquiries = [
-  {
-    id: 1,
-    title: '서비스 이용 관련 문의드립니다',
-    date: '2026년 3월 25일 17:11',
-    author: '홍길동',
-    email: 'hong@example.com',
-    content: `안녕하세요. 서비스 이용 중 몇 가지 궁금한 사항이 있어 문의드립니다.
-
-1. API 연동 시 인증 방식이 어떻게 되는지 알고 싶습니다.
-2. 대시보드에서 데이터 갱신 주기를 변경할 수 있는지 궁금합니다.
-3. 관리자 계정과 일반 계정의 권한 차이가 어떻게 되는지 설명 부탁드립니다.
-
-감사합니다.`,
-  },
-  {
-    id: 2,
-    title: '결제 시스템에 대해 질문이 있습니다',
-    date: '2026년 3월 24일 14:30',
-    author: '홍길동',
-    email: 'hong@example.com',
-    content: '',
-  },
-  {
-    id: 3,
-    title: '회원가입이 되지 않습니다',
-    date: '2026년 3월 23일 09:15',
-    author: '홍길동',
-    email: 'hong@example.com',
-    content: '',
-  },
-  {
-    id: 4,
-    title: '대시보드 기능 개선 요청',
-    date: '2026년 3월 22일 16:45',
-    author: '홍길동',
-    email: 'hong@example.com',
-    content: '',
-  },
-  {
-    id: 5,
-    title: 'API 연동 방법 문의',
-    date: '2026년 3월 21일 11:20',
-    author: '홍길동',
-    email: 'hong@example.com',
-    content: '',
-  },
-];
+import { getInquiryById, deleteInquiry } from '../api/inquiries';
 
 const InquiryDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const inquiry = inquiries.find((item) => item.id === Number(id));
+  const [inquiry, setInquiry] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInquiry = async () => {
+      try {
+        const data = await getInquiryById(id);
+        console.log('문의 상세 API 응답:', data);
+        
+        // 서버 응답 구조(data, data.data 등)에 맞게 안전하게 처리
+        const inquiryData = data?.data || data; 
+        setInquiry(inquiryData);
+      } catch (error) {
+        console.error('문의 상세 조회 실패:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchInquiry();
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="relative w-screen h-screen bg-[#F9FAFB] overflow-hidden font-sans">
+        <Header />
+        <Sidebar />
+        <main className="absolute top-[60px] left-[240px] right-0 h-[calc(100%-120px)] flex items-center justify-center">
+          <div className="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!inquiry) {
     return (
@@ -139,10 +122,16 @@ const InquiryDetail = () => {
       <DeleteModal
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}
-        onConfirm={() => {
-          // TODO: API 연동 시 삭제 요청 추가
-          setIsDeleteOpen(false);
-          navigate('/inquiry', { state: { deleted: true } });
+        onConfirm={async () => {
+          try {
+            await deleteInquiry(id);
+            setIsDeleteOpen(false);
+            navigate('/inquiry', { state: { deleted: true } });
+          } catch (error) {
+            console.error('문의 삭제 실패:', error);
+            alert('삭제에 실패했습니다.');
+            setIsDeleteOpen(false);
+          }
         }}
       />
 

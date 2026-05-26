@@ -1,6 +1,22 @@
+import { useEffect } from 'react';
 import Button from './Button';
 
 const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
@@ -11,6 +27,8 @@ const DeleteModal = ({ isOpen, onClose, onConfirm }) => {
     >
       {/* Modal */}
       <div
+        role="dialog"
+        aria-modal="true"
         className="flex flex-col items-start p-[33px] gap-[32px] w-[389px] bg-white border border-[#E5E7EB] rounded-[10px]"
         onClick={(e) => e.stopPropagation()}
       >

@@ -38,6 +38,7 @@ const TextInput = ({ error = false, helperText, className = '', type = 'text', .
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
+            tabIndex={-1}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
             aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 표시'}
           >

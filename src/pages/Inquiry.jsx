@@ -5,19 +5,29 @@ import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
 import Button from '../components/Button';
 import Toast from '../components/Toast';
-
-const inquiries = [
-  { id: 1, title: '서비스 이용 관련 문의드립니다', date: '2026년 3월 25일 17:11' },
-  { id: 2, title: '결제 시스템에 대해 질문이 있습니다', date: '2026년 3월 24일 14:30' },
-  { id: 3, title: '회원가입이 되지 않습니다', date: '2026년 3월 23일 09:15' },
-  { id: 4, title: '대시보드 기능 개선 요청', date: '2026년 3월 22일 16:45' },
-  { id: 5, title: 'API 연동 방법 문의', date: '2026년 3월 21일 11:20' },
-];
+import { getInquiries } from '../api/inquiries';
 
 const Inquiry = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [toastConfig, setToastConfig] = useState({ isVisible: false, message: '' });
+  const [inquiries, setInquiries] = useState([]);
+
+  useEffect(() => {
+    const fetchInquiries = async () => {
+      try {
+        const data = await getInquiries();
+        console.log('문의 목록 API 응답:', data); // 디버깅용 로그
+        
+        // 데이터가 배열이 아니면 data.data나 빈 배열을 사용하도록 안전하게 처리
+        const validData = Array.isArray(data) ? data : (data?.data || []);
+        setInquiries(validData);
+      } catch (error) {
+        console.error('목록을 불러오는데 실패했습니다.', error);
+      }
+    };
+    fetchInquiries();
+  }, []);
 
   useEffect(() => {
     if (location.state?.deleted) {
@@ -68,7 +78,7 @@ const Inquiry = () => {
                   key={item.id}
                   onClick={() => navigate(`/inquiry/${item.id}`)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
+                    if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
                       navigate(`/inquiry/${item.id}`);
                     }

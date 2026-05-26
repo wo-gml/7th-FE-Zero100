@@ -6,6 +6,7 @@ import Inquiry from './pages/Inquiry'
 import InquiryCreate from './pages/InquiryCreate'
 import MyPage from './pages/MyPage'
 import InquiryDetail from './pages/InquiryDetail'
+import KakaoCallback from './pages/KakaoCallback'
 
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
       <Route path="/main" element={<Main />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
+      <Route path="/auth/kakao/callback" element={<KakaoCallback />} />
       <Route path="/inquiry" element={<Inquiry />} />
       <Route path="/inquiry/create" element={<InquiryCreate />} />
       <Route path="/mypage" element={<MyPage />} />
